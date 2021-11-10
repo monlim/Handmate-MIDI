@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <title>Hand Tracking Midi Out</title>
+  <link rel="stylesheet" type="text/css" href="appstyle.css">
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.3/hands.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/webmidi@2.5.2"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.31/Tone.js"></script>
+  <meta http-equiv="X-UA-Compatible" content="requiresActiveX=true"/>
+</head>
+
+<body>
+  <div class="container">
+    <video class="input_video"></video>
+    <div class="canvas-container">
+    <canvas class="output_canvas" width="1280px" height="720px"></canvas>
+    </div>
+  </div>
+  <div class="view">
+    <button onclick="toggleControl()" id="controlButton">Hide controls</button>
+  </div>
+  <div class="control-panel">
+    <br><br>
+    Selfie view <input id="selfie" type="checkbox" checked="checked">
+    Show tracking <input id="showTracking" type="checkbox" checked="checked"><br>
+    <hr> 
+    <div id="dropdown">
+      MIDI out device
+      <select id="device" onchange="changeDevice()">
+      </select>
+    </div>
+    <hr>
+    <!--Automate bpm<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">Control bpm with movement, range between 20 - 500</span>
+      </div>
+      <input id="autoBpm" type="checkbox">
+      <label class="label"
+      for="bpmControlInput"></label>
+        <select name="bpmControlInput" id="bpmControlInput">
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX" selected>Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>-->
+      BPM<input type="range" id="bpm" name="bpm" min="20" max="500" step="1" value="120">
+      <label for="bpm"></label>
+      <span id="bpmValue" class="rangeValue">120</span><br>
+    <hr>
+    <b>Send midi notes</b><input id="sendMidi" type="checkbox"><br>
+    <b>Midi notes (continuous)</b><br>
+    <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">1-16 channels</span>
+      </div>
+    </label>
+    <input type="number" id="midi1Channel" min="1" max="16" /><br>
+    Note pitch<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">Control note pitch with movement. If none selected, note will not be generated</span>
+      </div>
+      <label class="label"
+      for="midi1ControlInput"></label>
+        <select name="midi1ControlInput" id="midi1ControlInput">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+      Note velocity<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">Control note velocity with movement. If none selected, note velocity is maximum</span>
+      </div>
+      <label class="label"
+      for="midi1VelInput"></label>
+        <select name="midi1VelInput" id="midi1VelInput">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+      <b>Midi notes (trigger)</b><br>
+      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">1-16 channels, setting to 0 will turn off feature</span>
+        </div>
+      </label>
+      <input type="number" id="trigger1Channel" min="0" max="16" />
+      <label for="midi1NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">0-127</span>
+        </div>
+      </label>
+      <input type="number" id="midi1NoteInput" min="0" max="127" value="60"/>
+      Index fingers together<br>
+      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">1-16 channels, setting to 0 will turn off feature</span>
+        </div>
+      </label>
+      <input type="number" id="trigger2Channel" min="0" max="16" />
+      <label for="midi2NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">0-127</span>
+        </div>
+      </label>
+      <input type="number" id="midi2NoteInput" min="0" max="127" value="60"/>
+      Left hand reversed<br>
+      <input type="number" id="trigger3Channel" min="0" max="16" />
+      <label for="midi3NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">0-127</span>
+        </div>
+      </label>
+      <input type="number" id="midi3NoteInput" min="0" max="127" value="60"/>
+    Right hand reversed<br>
+      <hr>
+      <b>Continous controls</b><br>
+      Pitchbend
+      <label class="label"
+      for="pitchBendInput"></label>
+        <select name="pitchBendInput" id="pitchBendInput">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+      Aftertouch
+      <label class="label"
+      for="aftertouchInput"></label>
+        <select name="aftertouchInput" id="aftertouchInput">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+      <label for="cc1Channel">Chan:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">1-16 channels</span>
+      </div>
+      </label>
+      <input type="number" id="cc1Channel" min="1" max="16" value="1"/>
+      <label for="cc1Controller">CC:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">0-127</span>
+      </div>
+      </label>
+      <input type="number" id="cc1Controller" min="0" max="127" value="1"/>
+      <label class="label"
+      for="cc1Input"></label>
+        <select name="cc1Input" id="cc1Input">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+      <label for="cc2Channel">Chan:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">1-16 channels</span>
+      </div>
+      </label>
+      <input type="number" id="cc2Channel" min="1" max="16" value="1"/>
+      <label for="cc2Controller">CC:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">0-127</span>
+      </div>
+      </label>
+      <input type="number" id="cc2Controller" min="0" max="127" value="1"/>
+      <label class="label"
+      for="cc2Input"></label>
+        <select name="cc2Input" id="cc2Input">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+      <label for="cc3Channel">Chan:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">1-16 channels</span>
+      </div>
+      </label>
+      <input type="number" id="cc3Channel" min="1" max="16" value="1"/>
+      <label for="cc3Controller">CC:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">0-127</span>
+      </div>
+      </label>
+      <input type="number" id="cc3Controller" min="0" max="127" value="1"/>
+      <label class="label"
+      for="cc3Input"></label>
+        <select name="cc3Input" id="cc3Input">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+      <label for="cc4Channel">Chan:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">1-16 channels</span>
+      </div>
+      </label>
+      <input type="number" id="cc4Channel" min="1" max="16" value="1"/>
+      <label for="cc4Controller">CC:<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">0-127</span>
+      </div>
+      </label>
+      <input type="number" id="cc4Controller" min="0" max="127" value="1"/>
+      <label class="label"
+      for="cc4Input"></label>
+        <select name="cc4Input" id="cc4Input">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+  </div> 
+  <script type="text/javascript" src="script.js"></script>
+</body>
+</html>
