@@ -28,15 +28,15 @@ const bpm = document.getElementById("bpm");
 const bpmValue = document.getElementById("bpmValue");
 //const bpmControlInput = document.getElementById("bpmControlInput");
 //const autoBpm = document.getElementById("autoBpm");
-const midi1Channel = document.getElementById("midi1Channel");
+const midiChannel = document.getElementById("midiChannel");
 const trigger1Channel = document.getElementById("trigger1Channel");
 const midi1NoteInput = document.getElementById("midi1NoteInput");
 const trigger2Channel = document.getElementById("trigger2Channel");
 const midi2NoteInput = document.getElementById("midi2NoteInput");
 const trigger3Channel = document.getElementById("trigger3Channel");
 const midi3NoteInput = document.getElementById("midi3NoteInput");
-const midi1ControlInput = document.getElementById("midi1ControlInput");
-const midi1VelInput = document.getElementById("midi1VelInput");
+const midiControlInput = document.getElementById("midiControlInput");
+const midiVelInput = document.getElementById("midiVelInput");
 const pitchBendInput = document.getElementById("pitchBendInput");
 const aftertouchInput = document.getElementById("aftertouchInput");
 const cc1Input = document.getElementById("cc1Input");
@@ -52,10 +52,13 @@ const cc4Input = document.getElementById("cc4Input");
 const cc4Controller = document.getElementById("cc4Controller");
 const cc4Channel = document.getElementById("cc4Channel");
 let leftWrist, leftIndex, rightWrist, rightIndex, leftThumb, rightThumb, leftThumbX, rightThumbX, leftIndexX, leftIndexY, leftWristX, leftWristY, rightIndexX, rightIndexY, rightWristX, rightWristY, leftClose, rightClose, distance;
-let output, midi1ControlValue, midi1Vel;
+let output, midiControlValue, midiVel;
+//create noteEvent to play continuous stream of midi notes at a particular duration
 const noteEvent = new Tone.ToneEvent((time) => {
-  output.playNote(scaleValue(midi1ControlValue, [0, 1], [1, 127]), midi1Channel.value, {velocity: midi1Vel, duration:"4n"}, time);
+  output.playNote(scaleValue(midiControlValue, [0, 1], [1, 127]), midiChannel.value, {velocity: midiVel, duration:"4n"}, time);
 });
+
+//create dictionary of midi Notes and set default values
 const midiDic = {0: "C0", 1: "C#0", 2: "D0", 3: "D#0", 4: "E0", 5: "F0", 6: "F#0", 7: "G0", 8: "G#0", 9: "A0", 10: "A#0", 11: "B0", 
 12: "C1", 13: "C#1", 14: "D1", 15: "D#1", 16: "E1", 17: "F1", 18: "F#1", 19: "G1", 20: "G#1", 21: "A1", 22: "A#1", 23: "B1",
 24: "C2", 25: "C#2", 26: "D2", 27: "D#2", 28: "E2", 29: "F2", 30: "F#2", 31: "G2", 32: "G#2", 33: "A2", 34: "A#2", 35: "B2",
@@ -70,6 +73,7 @@ const midiDic = {0: "C0", 1: "C#0", 2: "D0", 3: "D#0", 4: "E0", 5: "F0", 6: "F#0
 let midi1Note = "C5";
 let midi2Note = "C5";
 let midi3Note = "C5";
+
 const triggerNote = new Tone.ToneEvent((time) => {
   output.playNote(midi1Note, trigger1Channel.value, time);
 });
@@ -79,6 +83,7 @@ const trigger2Note = new Tone.ToneEvent((time) => {
 const trigger3Note = new Tone.ToneEvent((time) => {
   output.playNote(midi3Note, trigger3Channel.value, time);
 });
+
 Tone.Transport.bpm.value = 120;
 
 //enable WebMidi and output list of Midi Out devices
@@ -97,7 +102,7 @@ WebMidi.enable(function (err) {
   }  
 });
 
-//send Midi notes out
+//send Midi notes out when "send Midi" box checked
 sendMidi.addEventListener("change", function(){
   if (this.checked) {
     Tone.Transport.start();
@@ -142,8 +147,8 @@ function scaleValue(value, from, to) {
 };*/
 
 //start midi note loop
-midi1ControlInput.onchange = function(){
-  if (midi1ControlInput.value === "nil") {noteEvent.stop();
+midiControlInput.onchange = function(){
+  if (midiControlInput.value === "nil") {noteEvent.stop();
   } else {
     noteEvent.start();
     noteEvent.loop = true;
@@ -161,8 +166,8 @@ bpm.addEventListener("input", function(ev){
 //  Tone.Transport.bpm.rampTo((scaleValue (controlValue, [0, 1], [20, 500])), 0.05);  
 //};
 
-function midi1VelControl(controlValue) {
-  midi1Vel = clamp(controlValue, 0, 1);
+function midiVelControl(controlValue) {
+  midiVel = clamp(controlValue, 0, 1);
 };
 
 function pitchBendControl(controlValue) {
@@ -218,7 +223,7 @@ function Trigger3(rightThumbX, rightIndexX) {
 
 //Output movement to midi
 function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightThumb) {
-  if (midi1VelInput.value === "nil"){midi1Vel = 1};
+  if (midiVelInput.value === "nil"){midiVel = 1};
   if (leftIndex){
     leftIndexX = leftIndex.x;
     leftIndexY = 1 - leftIndex.y; 
@@ -231,12 +236,12 @@ function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightTh
       if (bpmControlInput.value === "leftIndexY"){bpmControl(leftIndexY)};
       if (bpmControlInput.value === "leftClosed"){bpmControl(leftClose)};
       };*/
-    if (midi1ControlInput.value === "leftIndexX"){midi1ControlValue = leftIndexX};
-    if (midi1ControlInput.value === "leftIndexY"){midi1ControlValue = leftIndexY};
-    if (midi1ControlInput.value === "leftClosed"){midi1ControlValue = leftClose};
-    if (midi1VelInput.value === "leftIndexX"){midi1VelControl(leftIndexX)};
-    if (midi1VelInput.value === "leftIndexY"){midi1VelControl(leftIndexY)};
-    if (midi1VelInput.value === "leftClosed"){midi1VelControl(leftClose)};
+    if (midiControlInput.value === "leftIndexX"){midiControlValue = leftIndexX};
+    if (midiControlInput.value === "leftIndexY"){midiControlValue = leftIndexY};
+    if (midiControlInput.value === "leftClosed"){midiControlValue = leftClose};
+    if (midiVelInput.value === "leftIndexX"){midiVelControl(leftIndexX)};
+    if (midiVelInput.value === "leftIndexY"){midiVelControl(leftIndexY)};
+    if (midiVelInput.value === "leftClosed"){midiVelControl(leftClose)};
     if (pitchBendInput.value === "leftIndexX"){pitchBendControl(leftIndexX)};
     if (pitchBendInput.value === "leftIndexY"){pitchBendControl(leftIndexY)};
     if (pitchBendInput.value === "leftClosed"){pitchBendControl(leftClose)};
@@ -269,12 +274,12 @@ function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightTh
       if (bpmControlInput.value === "rightIndexY"){bpmControl(rightIndexY)};
       if (bpmControlInput.value === "rightClosed"){bpmControl(rightClose)};
       };*/
-    if (midi1ControlInput.value === "rightIndexX"){midi1ControlValue = rightIndexX};
-    if (midi1ControlInput.value === "rightIndexY"){midi1ControlValue = rightIndexY};
-    if (midi1ControlInput.value === "rightClosed"){midi1ControlValue = rightClose};
-    if (midi1VelInput.value === "rightIndexX"){midi1VelControl(rightIndexX)};
-    if (midi1VelInput.value === "rightIndexY"){midi1VelControl(rightIndexY)};
-    if (midi1VelInput.value === "rightClosed"){midi1VelControl(rightClose)};
+    if (midiControlInput.value === "rightIndexX"){midiControlValue = rightIndexX};
+    if (midiControlInput.value === "rightIndexY"){midiControlValue = rightIndexY};
+    if (midiControlInput.value === "rightClosed"){midiControlValue = rightClose};
+    if (midiVelInput.value === "rightIndexX"){midiVelControl(rightIndexX)};
+    if (midiVelInput.value === "rightIndexY"){midiVelControl(rightIndexY)};
+    if (midiVelInput.value === "rightClosed"){midiVelControl(rightClose)};
     if (pitchBendInput.value === "rightIndexX"){pitchBendControl(rightIndexX)};
     if (pitchBendInput.value === "rightIndexY"){pitchBendControl(rightIndexY)};
     if (pitchBendInput.value === "rightClosed"){pitchBendControl(rightClose)};
@@ -304,8 +309,8 @@ function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightTh
     /*if (autoBpm.checked) {
       if (bpmControlInput.value === "indexDistance"){bpmControl(distance)};
     };*/
-    if (midi1ControlInput.value === "indexDistance"){midi1ControlValue = distance};
-    if (midi1VelInput.value === "indexDistance"){midi1VelControl(distance)};
+    if (midiControlInput.value === "indexDistance"){midiControlValue = distance};
+    if (midiVelInput.value === "indexDistance"){midiVelControl(distance)};
     if (pitchBendInput.value === "indexDistance"){pitchBendControl(distance)};
     if (aftertouchInput.value === "indexDistance"){aftertouchControl(distance)};
     if (cc1Input.value === "indexDistance"){cc1Control(distance)};
