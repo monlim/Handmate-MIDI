@@ -7,10 +7,9 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.3/hands.js" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/webmidi@2.5.2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/webmidi@next/dist/iife/webmidi.iife.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.31/Tone.js"></script>
-  <meta http-equiv="X-UA-Compatible" content="requiresActiveX=true"/>
 </head>
 
 <body>
@@ -25,15 +24,20 @@
   </div>
   <div class="control-panel">
     <br><br>
-    Selfie view <input id="selfie" type="checkbox" checked="checked">
-    Show tracking <input id="showTracking" type="checkbox" checked="checked"><br>
+    Selfie view<input id="selfie" type="checkbox" checked="checked">
+    Show tracking <input id="showTracking" type="checkbox" checked="checked">
+    Fps <span id="fps"></span>
     <hr> 
+
+
     <div id="dropdown">
       MIDI out device
       <select id="device" onchange="changeDevice()">
       </select>
     </div>
     <hr>
+
+
     <!--Automate bpm<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">Control bpm with movement, range between 20 - 500</span>
       </div>
@@ -49,17 +53,19 @@
           <option value="rightClosed">Right hand closed</option>
           <option value="indexDistance">Index distance</option>
         </select><br>-->
-      BPM<input type="range" id="bpm" name="bpm" min="20" max="500" step="1" value="120">
+
+
+    <b>Send midi notes<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">Check box to send continous stream of midi notes</span>
+      </div></b><input id="sendMidi" type="checkbox"><br>
+    BPM<input type="range" id="bpm" name="bpm" min="20" max="500" step="1" value="120">
       <label for="bpm"></label>
       <span id="bpmValue" class="rangeValue">120</span><br>
-    <hr>
-    <b>Send midi notes</b><input id="sendMidi" type="checkbox"><br>
-    <b>Midi notes (continuous)</b><br>
     <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">1-16 channels</span>
       </div>
     </label>
-    <input type="number" id="midiChannel" min="1" max="16" /><br>
+    <input type="number" id="midiChannel" min="1" max="16" value="1"/><br>
     Note pitch<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">Control note pitch with movement. If none selected, note will not be generated</span>
       </div>
@@ -90,42 +96,12 @@
           <option value="rightClosed">Right hand closed</option>
           <option value="indexDistance">Index distance</option>
         </select><br>
-      <b>Midi notes (trigger)</b><br>
-      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
-        <span class="tooltiptext">1-16 channels, setting to 0 will turn off feature</span>
-        </div>
-      </label>
-      <input type="number" id="trigger1Channel" min="0" max="16" />
-      <label for="midi1NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
-        <span class="tooltiptext">0-127</span>
-        </div>
-      </label>
-      <input type="number" id="midi1NoteInput" min="0" max="127" value="60"/>
-      Index fingers together<br>
-      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
-        <span class="tooltiptext">1-16 channels, setting to 0 will turn off feature</span>
-        </div>
-      </label>
-      <input type="number" id="trigger2Channel" min="0" max="16" />
-      <label for="midi2NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
-        <span class="tooltiptext">0-127</span>
-        </div>
-      </label>
-      <input type="number" id="midi2NoteInput" min="0" max="127" value="60"/>
-      Left hand reversed<br>
-      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
-        <span class="tooltiptext">1-16 channels, setting to 0 will turn off feature</span>
-        </div>
-      </label>
-      <input type="number" id="trigger3Channel" min="0" max="16" />
-      <label for="midi3NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
-        <span class="tooltiptext">0-127</span>
-        </div>
-      </label>
-      <input type="number" id="midi3NoteInput" min="0" max="127" value="60"/>
-    Right hand reversed<br>
       <hr>
-      <b>Continous controls</b><br>
+
+
+      <b>Continous controls<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">Send midi CC</span>
+      </div></b><br>
       Pitchbend
       <label class="label"
       for="pitchBendInput"></label>
@@ -178,12 +154,12 @@
       <span class="tooltiptext">1-16 channels</span>
       </div>
       </label>
-      <input type="number" id="cc2Channel" min="1" max="16" value="1"/>
+      <input type="number" id="cc2Channel" min="1" max="16" value="2"/>
       <label for="cc2Controller">CC:<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">0-127</span>
       </div>
       </label>
-      <input type="number" id="cc2Controller" min="0" max="127" value="1"/>
+      <input type="number" id="cc2Controller" min="0" max="127" value="2"/>
       <label class="label"
       for="cc2Input"></label>
         <select name="cc2Input" id="cc2Input">
@@ -200,12 +176,12 @@
       <span class="tooltiptext">1-16 channels</span>
       </div>
       </label>
-      <input type="number" id="cc3Channel" min="1" max="16" value="1"/>
+      <input type="number" id="cc3Channel" min="1" max="16" value="3"/>
       <label for="cc3Controller">CC:<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">0-127</span>
       </div>
       </label>
-      <input type="number" id="cc3Controller" min="0" max="127" value="1"/>
+      <input type="number" id="cc3Controller" min="0" max="127" value="3"/>
       <label class="label"
       for="cc3Input"></label>
         <select name="cc3Input" id="cc3Input">
@@ -222,12 +198,12 @@
       <span class="tooltiptext">1-16 channels</span>
       </div>
       </label>
-      <input type="number" id="cc4Channel" min="1" max="16" value="1"/>
+      <input type="number" id="cc4Channel" min="1" max="16" value="4"/>
       <label for="cc4Controller">CC:<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">0-127</span>
       </div>
       </label>
-      <input type="number" id="cc4Controller" min="0" max="127" value="1"/>
+      <input type="number" id="cc4Controller" min="0" max="127" value="4"/>
       <label class="label"
       for="cc4Input"></label>
         <select name="cc4Input" id="cc4Input">
@@ -240,7 +216,55 @@
           <option value="rightClosed">Right hand closed</option>
           <option value="indexDistance">Index distance</option>
         </select><br>
+      <hr>
+
+
+      <b>Gesture Recognition<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">Check box to start gesture recognition to trigger Midi notes</span>
+        </div></b><input id="gesture" type="checkbox"><br>
+      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">1-16 channels</span>
+        </div>
+      </label>
+      <input type="number" id="trigger1Channel" min="1" max="16" />
+      <label for="midi1NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">0-127</span>
+        </div>
+      </label>
+      <input type="number" id="midi1NoteInput" min="0" max="127" value="60"/>
+      <span style='font-size: 25px;'>&#128073&#128072;</span><div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">index fingers touching</span>
+        </div><br>
+      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">1-16 channels</span>
+        </div>
+      </label>
+      <input type="number" id="trigger2Channel" min="1" max="16" />
+      <label for="midi2NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">0-127</span>
+        </div>
+      </label>
+      <input type="number" id="midi2NoteInput" min="0" max="127" value="60"/>
+      <span class="flipH">&#9995;</span><div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">back of left hand facing screen</span>
+        </div><br>
+      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">1-16 channels</span>
+        </div>
+      </label>
+      <input type="number" id="trigger3Channel" min="1" max="16" />
+      <label for="midi3NoteInput">Midi note:<div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">0-127</span>
+        </div>
+      </label>
+      <input type="number" id="midi3NoteInput" min="0" max="127" value="60"/>
+      <span style='font-size: 25px;'>&#9995;</span><div class="tooltip circle"><sup><i>i</i></sup>
+        <span class="tooltiptext">back of right hand facing screen</span>
+        </div><br>
+
+
   </div> 
+  <script type="text/javascript" src="fingerpose.js"></script>
   <script type="text/javascript" src="script.js"></script>
 </body>
 </html>
