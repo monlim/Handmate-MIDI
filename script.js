@@ -22,6 +22,8 @@ const canvasElement = document.getElementsByClassName('output_canvas')[0];
 const canvasCtx = canvasElement.getContext('2d');
 const showTracking = document.getElementById("showTracking");
 const selfie = document.getElementById("selfie");
+const fpsoutput = document.getElementById("fps");
+const gesture = document.getElementById("gesture");
 const device = document.getElementById('device');
 const sendMidi = document.getElementById("sendMidi");
 const bpm = document.getElementById("bpm");
@@ -51,12 +53,8 @@ const cc3Channel = document.getElementById("cc3Channel");
 const cc4Input = document.getElementById("cc4Input");
 const cc4Controller = document.getElementById("cc4Controller");
 const cc4Channel = document.getElementById("cc4Channel");
-let leftWrist, leftIndex, rightWrist, rightIndex, leftThumb, rightThumb, leftThumbX, rightThumbX, leftIndexX, leftIndexY, leftWristX, leftWristY, rightIndexX, rightIndexY, rightWristX, rightWristY, leftClose, rightClose, distance;
-let output, midiControlValue, midiVel;
-//create noteEvent to play continuous stream of midi notes at a particular duration
-const noteEvent = new Tone.ToneEvent((time) => {
-  output.playNote(scaleValue(midiControlValue, [0, 1], [1, 127]), midiChannel.value, {velocity: midiVel, duration:"4n"}, time);
-});
+let leftWrist, leftIndex, leftPinky, rightPinky, rightWrist, rightIndex, leftThumb, rightThumb, leftThumbX, rightThumbX, leftIndexX, leftPinkyX, leftIndexY, leftWristX, leftWristY, rightIndexX, rightIndexY, rightPinkyX, rightWristX, rightWristY, leftClose, rightClose, distance;
+let output, midiControlValue, midiVel=1;
 
 //create dictionary of midi Notes and set default values
 const midiDic = {0: "C0", 1: "C#0", 2: "D0", 3: "D#0", 4: "E0", 5: "F0", 6: "F#0", 7: "G0", 8: "G#0", 9: "A0", 10: "A#0", 11: "B0", 
@@ -74,33 +72,30 @@ let midi1Note = "C5";
 let midi2Note = "C5";
 let midi3Note = "C5";
 
-const triggerNote = new Tone.ToneEvent((time) => {
-  output.playNote(midi1Note, trigger1Channel.value, time);
-});
-const trigger2Note = new Tone.ToneEvent((time) => {
-  output.playNote(midi2Note, trigger2Channel.value, time);
-});
-const trigger3Note = new Tone.ToneEvent((time) => {
-  output.playNote(midi3Note, trigger3Channel.value, time);
-});
+/*
+//Create gesture recognition
+const knownGestures = [
+  fp.Gestures.VictoryGesture,
+  fp.Gestures.ThumbsUpGesture
+];
+const GE = new fp.GestureEstimator(knownGestures);*/
 
 Tone.Transport.bpm.value = 120;
 
-//enable WebMidi and output list of Midi Out devices
-WebMidi.enable(function (err) {
-  if (err) {
-    console.log("WebMidi could not be enabled.", err);
-  } else {
-    console.log("WebMidi enabled!");
-    for (let i = 0; i < WebMidi.outputs.length; i++) {
+WebMidi
+  .enable()
+  .then(onEnabled)
+  .catch(err => alert(err));
+
+function onEnabled(){
+  for (let i = 0; i < WebMidi.outputs.length; i++) {
       jQuery('<option/>', {
         value: WebMidi.outputs[i].name,
         html: WebMidi.outputs[i].name
         }).appendTo('#dropdown select');
     }
     output = WebMidi.outputs[0]; 
-  }  
-});
+};
 
 //send Midi notes out when "send Midi" box checked
 sendMidi.addEventListener("change", function(){
@@ -142,17 +137,18 @@ function scaleValue(value, from, to) {
   return (capped * scale + to[0]);
 };
 
-/*bpmControlInput.onchange = function(){
-  bpmControlNow = bpmControlInput.value;
-};*/
+//bpmControlInput.onchange = function(){
+//  bpmControlNow = bpmControlInput.value;
+//};
 
-//start midi note loop
+//create midi note loop
+const loop = new Tone.Loop((time) => {
+  output.playNote(scaleValue(midiControlValue, [0, 1], [1, 127]), [midiChannel.value], {attack: midiVel, duration: 250}, time)
+}, "4n");
 midiControlInput.onchange = function(){
-  if (midiControlInput.value === "nil") {noteEvent.stop();
+  if (midiControlInput.value === "nil") {loop.stop();
   } else {
-    noteEvent.start();
-    noteEvent.loop = true;
-    noteEvent.loopEnd = "4n";
+    loop.start();
   }
 };
 
@@ -162,9 +158,10 @@ bpm.addEventListener("input", function(ev){
   bpmValue.innerHTML = bpm.value;
 });
 
-//function bpmControl(controlValue) {
-//  Tone.Transport.bpm.rampTo((scaleValue (controlValue, [0, 1], [20, 500])), 0.05);  
-//};
+/*function bpmControl(controlValue){
+  Tone.Transport.bpm.rampTo(scaleValue(controlValue, [0, 1], [20, 400]), 0.1)
+  bpmValue.innerHTML = bpm.value;
+};*/
 
 function midiVelControl(controlValue) {
   midiVel = clamp(controlValue, 0, 1);
@@ -179,55 +176,106 @@ function aftertouchControl(controlValue) {
 };
 
 function cc1Control(controlValue) {
-  output.sendControlChange(Number(cc1Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), cc1Channel.value);
+  output.sendControlChange(Number(cc1Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc1Channel.value]);
 };
 
 function cc2Control(controlValue) {
-  output.sendControlChange(Number(cc2Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), cc2Channel.value);
+  output.sendControlChange(Number(cc2Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc2Channel.value]);
 };
 
 function cc3Control(controlValue) {
-  output.sendControlChange(Number(cc3Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), cc3Channel.value);
+  output.sendControlChange(Number(cc3Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc3Channel.value]);
 };
 
 function cc4Control(controlValue) {
-  output.sendControlChange(Number(cc4Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), cc4Channel.value);
+  output.sendControlChange(Number(cc4Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc4Channel.value]);
 };
 
+//Trigger note if index fingers touching
+let t1on = false;
+let fingerDistanceActivate = 0.02;
+let fingerDistanceDeactivate = 0.05;
 function Trigger1(distance) {
-  setTimeout(function(){
-    if (distance < 0.03) {
-      triggerNote.start();
-    }
-  }, 300);
-  triggerNote.stop();
+  if(distance <= fingerDistanceActivate){
+    if(t1on)return;
+    t1on = true;
+    //console.log("Trigger 1, Distance: ", distance);
+    output.playNote(midi1Note, [trigger1Channel.value]);
+    setTimeout(function(){output.stopNote(midi1Note, [trigger1Channel.value])}, 500);
+  }
+  if(distance > fingerDistanceDeactivate){
+    t1on = false;
+  }
 };
 
-function Trigger2(leftThumbX, leftIndexX) {
-  setTimeout(function(){
-    if ((leftThumbX - leftIndexX) < -0.05) {
-      trigger2Note.start();
-    }
-  }, 300);
-  trigger2Note.stop();
+//Trigger note if left hand reversed
+let t2on = false;
+let t2DistanceActivate = -0.1;
+let t2DistanceDeactivate = 0;
+function Trigger2(leftThumbX, leftPinkyX) {
+  if ((leftThumbX - leftPinkyX) <= t2DistanceActivate){
+    if(t2on)return;
+    t2on = true;
+    output.playNote(midi2Note, [trigger2Channel.value]);
+    setTimeout(function(){output.stopNote(midi2Note, [trigger2Channel.value])}, 500);
+  }
+  if((leftThumbX - leftPinkyX) > fingerDistanceDeactivate){
+    t2on = false;
+  }
 };
 
-function Trigger3(rightThumbX, rightIndexX) {
-  setTimeout(function(){
-    if ((rightIndexX- rightThumbX) < -0.05) {
-      trigger3Note.start();
-    }
-  }, 300);
-  trigger3Note.stop();
+//Trigger note if right hand reversed
+let t3on = false;
+let t3DistanceActivate = -0.1;
+let t3DistanceDeactivate = 0.1;
+function Trigger3(rightThumbX, rightPinkyX) {
+  //console.log(rightPinkyX - rightThumbX);
+  if ((rightPinkyX - rightThumbX) <= t3DistanceActivate){
+    if(t3on)return;
+    t3on = true;
+    output.playNote(midi3Note, [trigger3Channel.value]);
+    setTimeout(function(){output.stopNote(midi3Note, [trigger3Channel.value])}, 500);
+  }
+  if((rightPinkyX - rightThumbX) > fingerDistanceDeactivate){
+    t3on = false;
+  }
 };
+
+/*
+//Trigger note if left thumbs up
+let t2on = false;
+let t3on = false;
+function Trigger2(est) {
+    if(est.gestures.length){
+      if(est.gestures[0].name === 'thumbs_up'){
+        if(t2on)return;
+        t2on = true;
+        output.playNote(midi2Note, trigger2Channel.value);
+      };
+      if(est.gestures[0].name === 'victory'){
+        if(t3on)return;
+        t3on = true;
+        output.playNote(midi3Note, trigger3Channel.value);
+      };      
+  } else {
+    t2on = false;
+    t3on = false;
+  }
+};*/
 
 //Output movement to midi
-function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightThumb) {
+function myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWrist, rightThumb, rightPinky) {
   if (midiVelInput.value === "nil"){midiVel = 1};
+  if (pitchBendInput.value === "nil"){output.sendPitchBend(0)};
+  if (aftertouchInput.value === "nil"){output.sendChannelAftertouch(0, "all")};
+  if (cc1Input.value === "nil"){cc1Control(0)};
+  if (cc2Input.value === "nil"){cc2Control(0)};
+  if (cc3Input.value === "nil"){cc3Control(0)};
   if (leftIndex){
     leftIndexX = leftIndex.x;
     leftIndexY = 1 - leftIndex.y; 
     leftThumbX = leftThumb.x;
+    leftPinkyX = leftPinky.x;
     leftWristX = leftWrist.x;
     leftWristY = 1 - leftWrist.y;
     leftClose = scaleValue((Math.sqrt(((leftIndexX - leftWristX)**2)+((leftIndexY - leftWristY)**2))), [0.1, 0.4], [1, 0]); //0.4 - 0.1
@@ -260,12 +308,13 @@ function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightTh
     if (cc4Input.value === "leftIndexX"){cc4Control(leftIndexX)};
     if (cc4Input.value === "leftIndexY"){cc4Control(leftIndexY)};
     if (cc4Input.value === "leftClosed"){cc4Control(leftClose)};
-    if ((leftThumbX - leftIndexX) < -0.05) {Trigger2(leftThumbX, leftIndexX)};//reverse left hand trigger
+    if (gesture.checked){Trigger2(leftThumbX, leftPinkyX)};
   };
   if (rightIndex){
     rightIndexX = rightIndex.x;
     rightIndexY = 1 - rightIndex.y;
     rightThumbX = rightThumb.x;
+    rightPinkyX = rightPinky.x
     rightWristX = rightWrist.x;
     rightWristY = 1 - rightWrist.y;
     rightClose = scaleValue((Math.sqrt(((rightIndexX - rightWristX)**2)+((rightIndexY - rightWristY)**2))), [0.1, 0.4], [1, 0]); //0.4 - 0.1
@@ -298,7 +347,7 @@ function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightTh
     if (cc4Input.value === "rightIndexX"){cc4Control(rightIndexX)};
     if (cc4Input.value === "rightIndexY"){cc4Control(rightIndexY)};
     if (cc4Input.value === "rightClosed"){cc4Control(rightClose)};
-    if ((rightIndexX- rightThumbX) < -0.05) {Trigger3(rightThumbX, rightIndexX)}; // reverse right hand trigger
+    if (gesture.checked){Trigger3(rightThumbX, rightPinkyX)};
   };
   if (leftIndex && rightIndex){
     leftIndexX = leftIndex.x;
@@ -317,12 +366,26 @@ function myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightTh
     if (cc2Input.value === "indexDistance"){cc2Control(distance)};
     if (cc3Input.value === "indexDistance"){cc3Control(distance)};
     if (cc4Input.value === "indexDistance"){cc4Control(distance)};
-    if (distance < 0.03){Trigger1(distance)};
+    if (gesture.checked){Trigger1(distance)};
   };
 };
 
-//Draw Hand landmarks on screen}
+//Calculate FPS
+let counter = 0;
+let counterTracker = new Date();
 function onResults(results) {
+  counter++;
+  let now = new Date();
+  let timeDiff = now.getTime() - counterTracker.getTime()
+  if(timeDiff >= 1000){
+    let fps = Math.floor(counter / (timeDiff/1000));
+    fpsoutput.innerHTML = fps;
+    // reset
+    counter = 0;
+    counterTracker = new Date();
+  };
+
+  //Draw Hand landmarks on screen
   canvasCtx.save();
   canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
   canvasCtx.drawImage(
@@ -331,7 +394,8 @@ function onResults(results) {
     for (let index = 0; index < results.multiHandLandmarks.length; index++) {
       const classification = results.multiHandedness[index];
       const isRightHand = classification.label === 'Right';
-      const landmarks = results.multiHandLandmarks[index];    
+      const landmarks = results.multiHandLandmarks[index]; 
+
       if (showTracking.checked) {
         drawConnectors(
           canvasCtx, landmarks, HAND_CONNECTIONS,
@@ -343,18 +407,29 @@ function onResults(results) {
           return lerp(x.from.z, -0.15, .1, 10, 1);
         }
       })};
-    if (isRightHand === false){
-      leftIndex = landmarks[8];
-      leftWrist = landmarks[0];
-      leftThumb = landmarks[4];
+
+      //let flandmark = landmarks.map(landmark => [landmark.x, landmark.y, landmark.z]);
+      //est = GE.estimate(flandmark, 9);
+    
+      if (isRightHand === false){
+        leftIndex = landmarks[8];
+        leftWrist = landmarks[0];
+        leftThumb = landmarks[4];
+        leftPinky = landmarks[20];
+        /*if(gesture.checked) {
+          Trigger2(est);
+          //console.log("Left Hand:", est.gestures[0].name);
+        };*/
       } else {
-      rightIndex = landmarks[8];
-      rightWrist = landmarks[0];
-      rightThumb = landmarks[4];
+        rightIndex = landmarks[8];
+        rightWrist = landmarks[0];
+        rightThumb = landmarks[4];
+        rightPinky = landmarks[20];
+        //if(gesture.checked && est.gestures.length)console.log("Right Hand:", est.gestures[0].name);
       }
     }
   canvasCtx.restore();
-  myMidi(leftIndex, leftWrist, leftThumb, rightIndex, rightWrist, rightThumb);
+  myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWrist, rightThumb, rightPinky);
   };
 };
 
