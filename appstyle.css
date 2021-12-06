@@ -11,6 +11,17 @@ body {
   overflow: hidden;
 }
 
+.flipH {
+    display: inline-block;
+    font-size: 25px;
+    transform: scale(-1, 1);
+    -moz-transform: scale(-1, 1);
+    -webkit-transform: scale(-1, 1);
+    -o-transform: scale(-1, 1);
+    -ms-transform: scale(-1, 1);
+    transform: scale(-1, 1);
+}
+
 .input_video {
   display: none;
   position: absolute;
