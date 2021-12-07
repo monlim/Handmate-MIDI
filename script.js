@@ -241,28 +241,6 @@ function Trigger3(rightThumbX, rightPinkyX) {
   }
 };
 
-/*
-//Trigger note if left thumbs up
-let t2on = false;
-let t3on = false;
-function Trigger2(est) {
-    if(est.gestures.length){
-      if(est.gestures[0].name === 'thumbs_up'){
-        if(t2on)return;
-        t2on = true;
-        output.playNote(midi2Note, trigger2Channel.value);
-      };
-      if(est.gestures[0].name === 'victory'){
-        if(t3on)return;
-        t3on = true;
-        output.playNote(midi3Note, trigger3Channel.value);
-      };      
-  } else {
-    t2on = false;
-    t3on = false;
-  }
-};*/
-
 //Output movement to midi
 function myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWrist, rightThumb, rightPinky) {
   if (midiVelInput.value === "nil"){midiVel = 1};
@@ -284,30 +262,30 @@ function myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWri
       if (bpmControlInput.value === "leftIndexY"){bpmControl(leftIndexY)};
       if (bpmControlInput.value === "leftClosed"){bpmControl(leftClose)};
       };*/
-    if (midiControlInput.value === "leftIndexX"){midiControlValue = leftIndexX};
-    if (midiControlInput.value === "leftIndexY"){midiControlValue = leftIndexY};
-    if (midiControlInput.value === "leftClosed"){midiControlValue = leftClose};
-    if (midiVelInput.value === "leftIndexX"){midiVelControl(leftIndexX)};
-    if (midiVelInput.value === "leftIndexY"){midiVelControl(leftIndexY)};
-    if (midiVelInput.value === "leftClosed"){midiVelControl(leftClose)};
-    if (pitchBendInput.value === "leftIndexX"){pitchBendControl(leftIndexX)};
-    if (pitchBendInput.value === "leftIndexY"){pitchBendControl(leftIndexY)};
-    if (pitchBendInput.value === "leftClosed"){pitchBendControl(leftClose)};
-    if (aftertouchInput.value === "leftIndexX"){aftertouchControl(leftIndexX)};
-    if (aftertouchInput.value === "leftIndexY"){aftertouchControl(leftIndexY)};
-    if (aftertouchInput.value === "leftClosed"){aftertouchControl(leftClose)};
-    if (cc1Input.value === "leftIndexX"){cc1Control(leftIndexX)};
-    if (cc1Input.value === "leftIndexY"){cc1Control(leftIndexY)};
-    if (cc1Input.value === "leftClosed"){cc1Control(leftClose)};
-    if (cc2Input.value === "leftIndexX"){cc2Control(leftIndexX)};
-    if (cc2Input.value === "leftIndexY"){cc2Control(leftIndexY)};
-    if (cc2Input.value === "leftClosed"){cc2Control(leftClose)};
-    if (cc3Input.value === "leftIndexX"){cc3Control(leftIndexX)};
-    if (cc3Input.value === "leftIndexY"){cc3Control(leftIndexY)};
-    if (cc3Input.value === "leftClosed"){cc3Control(leftClose)};
-    if (cc4Input.value === "leftIndexX"){cc4Control(leftIndexX)};
-    if (cc4Input.value === "leftIndexY"){cc4Control(leftIndexY)};
-    if (cc4Input.value === "leftClosed"){cc4Control(leftClose)};
+    if (midiControlInput.value === "leftIndexX"){midiControlValue = leftIndexX}
+    else if (midiControlInput.value === "leftIndexY"){midiControlValue = leftIndexY}
+    else if (midiControlInput.value === "leftClosed"){midiControlValue = leftClose};
+    if (midiVelInput.value === "leftIndexX"){midiVelControl(leftIndexX)}
+    else if (midiVelInput.value === "leftIndexY"){midiVelControl(leftIndexY)}
+    else if (midiVelInput.value === "leftClosed"){midiVelControl(leftClose)};
+    if (pitchBendInput.value === "leftIndexX"){pitchBendControl(leftIndexX)}
+    else if (pitchBendInput.value === "leftIndexY"){pitchBendControl(leftIndexY)}
+    else if (pitchBendInput.value === "leftClosed"){pitchBendControl(leftClose)};
+    if (aftertouchInput.value === "leftIndexX"){aftertouchControl(leftIndexX)}
+    else if (aftertouchInput.value === "leftIndexY"){aftertouchControl(leftIndexY)}
+    else if (aftertouchInput.value === "leftClosed"){aftertouchControl(leftClose)};
+    if (cc1Input.value === "leftIndexX"){cc1Control(leftIndexX)}
+    else if (cc1Input.value === "leftIndexY"){cc1Control(leftIndexY)}
+    else if (cc1Input.value === "leftClosed"){cc1Control(leftClose)};
+    if (cc2Input.value === "leftIndexX"){cc2Control(leftIndexX)}
+    else if (cc2Input.value === "leftIndexY"){cc2Control(leftIndexY)}
+    else if (cc2Input.value === "leftClosed"){cc2Control(leftClose)};
+    if (cc3Input.value === "leftIndexX"){cc3Control(leftIndexX)}
+    else if (cc3Input.value === "leftIndexY"){cc3Control(leftIndexY)}
+    else if (cc3Input.value === "leftClosed"){cc3Control(leftClose)};
+    if (cc4Input.value === "leftIndexX"){cc4Control(leftIndexX)}
+    else if (cc4Input.value === "leftIndexY"){cc4Control(leftIndexY)}
+    else if (cc4Input.value === "leftClosed"){cc4Control(leftClose)};
     if (gesture.checked){Trigger2(leftThumbX, leftPinkyX)};
   };
   if (rightIndex){
@@ -323,30 +301,30 @@ function myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWri
       if (bpmControlInput.value === "rightIndexY"){bpmControl(rightIndexY)};
       if (bpmControlInput.value === "rightClosed"){bpmControl(rightClose)};
       };*/
-    if (midiControlInput.value === "rightIndexX"){midiControlValue = rightIndexX};
-    if (midiControlInput.value === "rightIndexY"){midiControlValue = rightIndexY};
-    if (midiControlInput.value === "rightClosed"){midiControlValue = rightClose};
-    if (midiVelInput.value === "rightIndexX"){midiVelControl(rightIndexX)};
-    if (midiVelInput.value === "rightIndexY"){midiVelControl(rightIndexY)};
-    if (midiVelInput.value === "rightClosed"){midiVelControl(rightClose)};
-    if (pitchBendInput.value === "rightIndexX"){pitchBendControl(rightIndexX)};
-    if (pitchBendInput.value === "rightIndexY"){pitchBendControl(rightIndexY)};
-    if (pitchBendInput.value === "rightClosed"){pitchBendControl(rightClose)};
-    if (aftertouchInput.value === "rightIndexX"){aftertouchControl(rightIndexX)};
-    if (aftertouchInput.value === "rightIndexY"){aftertouchControl(rightIndexY)};
-    if (aftertouchInput.value === "rightClosed"){aftertouchControl(rightClose)};
-    if (cc1Input.value === "rightIndexX"){cc1Control(rightIndexX)};
-    if (cc1Input.value === "rightIndexY"){cc1Control(rightIndexY)};
-    if (cc1Input.value === "rightClosed"){cc1Control(rightClose)};
-    if (cc2Input.value === "rightIndexX"){cc2Control(rightIndexX)};
-    if (cc2Input.value === "rightIndexY"){cc2Control(rightIndexY)};
-    if (cc2Input.value === "rightClosed"){cc2Control(rightClose)};
-    if (cc3Input.value === "rightIndexX"){cc3Control(rightIndexX)};
-    if (cc3Input.value === "rightIndexY"){cc3Control(rightIndexY)};
-    if (cc3Input.value === "rightClosed"){cc3Control(rightClose)};
-    if (cc4Input.value === "rightIndexX"){cc4Control(rightIndexX)};
-    if (cc4Input.value === "rightIndexY"){cc4Control(rightIndexY)};
-    if (cc4Input.value === "rightClosed"){cc4Control(rightClose)};
+    if (midiControlInput.value === "rightIndexX"){midiControlValue = rightIndexX}
+    else if (midiControlInput.value === "rightIndexY"){midiControlValue = rightIndexY}
+    else if (midiControlInput.value === "rightClosed"){midiControlValue = rightClose};
+    if (midiVelInput.value === "rightIndexX"){midiVelControl(rightIndexX)}
+    else if (midiVelInput.value === "rightIndexY"){midiVelControl(rightIndexY)}
+    else if (midiVelInput.value === "rightClosed"){midiVelControl(rightClose)};
+    if (pitchBendInput.value === "rightIndexX"){pitchBendControl(rightIndexX)}
+    else if (pitchBendInput.value === "rightIndexY"){pitchBendControl(rightIndexY)}
+    else if (pitchBendInput.value === "rightClosed"){pitchBendControl(rightClose)};
+    if (aftertouchInput.value === "rightIndexX"){aftertouchControl(rightIndexX)}
+    else if (aftertouchInput.value === "rightIndexY"){aftertouchControl(rightIndexY)}
+    else if (aftertouchInput.value === "rightClosed"){aftertouchControl(rightClose)};
+    if (cc1Input.value === "rightIndexX"){cc1Control(rightIndexX)}
+    else if (cc1Input.value === "rightIndexY"){cc1Control(rightIndexY)}
+    else if (cc1Input.value === "rightClosed"){cc1Control(rightClose)};
+    if (cc2Input.value === "rightIndexX"){cc2Control(rightIndexX)}
+    else if (cc2Input.value === "rightIndexY"){cc2Control(rightIndexY)}
+    else if (cc2Input.value === "rightClosed"){cc2Control(rightClose)};
+    if (cc3Input.value === "rightIndexX"){cc3Control(rightIndexX)}
+    else if (cc3Input.value === "rightIndexY"){cc3Control(rightIndexY)}
+    else if (cc3Input.value === "rightClosed"){cc3Control(rightClose)};
+    if (cc4Input.value === "rightIndexX"){cc4Control(rightIndexX)}
+    else if (cc4Input.value === "rightIndexY"){cc4Control(rightIndexY)}
+    else if (cc4Input.value === "rightClosed"){cc4Control(rightClose)};
     if (gesture.checked){Trigger3(rightThumbX, rightPinkyX)};
   };
   if (leftIndex && rightIndex){
