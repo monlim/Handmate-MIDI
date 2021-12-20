@@ -172,7 +172,7 @@ function pitchBendControl(controlValue) {
 };
 
 function aftertouchControl(controlValue) {
-  output.sendChannelAftertouch(controlValue, "all");
+  output.sendChannelAftertouch(clamp(controlValue, 0, 1), "all");
 };
 
 function cc1Control(controlValue) {
