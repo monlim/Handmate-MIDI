@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <head>
   <meta charset="utf-8">
-  <title>Hand Tracking Midi Out</title>
+  <title>Handmate MIDI2</title>
   <link rel="stylesheet" type="text/css" href="appstyle.css">
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils@0.3/camera_utils.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils@0.6/control_utils.js" crossorigin="anonymous"></script>
@@ -29,6 +29,9 @@
     Fps <span id="fps"></span>
     <hr> 
 
+    <div class="select">
+        <label for="videoSource">Video source: </label><select id="videoSource"></select>
+    </div>
 
     <div id="dropdown">
       MIDI out device
@@ -264,6 +267,6 @@
 
 
   </div> 
-  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript" src="script1.js"></script>
 </body>
 </html>
