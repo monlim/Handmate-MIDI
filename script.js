@@ -124,6 +124,9 @@ function gotDevices(deviceInfos) {
   });
 };
 
+
+console.log(navigator);
+
 navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 
 function gotStream(stream) {
@@ -208,27 +211,27 @@ function midiVelControl(controlValue) {
 };
 
 function pitchBendControl(controlValue) {
-  output.sendPitchBend(scaleValue(controlValue, [0, 1], [-1, 1]));
+  if(output)output.sendPitchBend(scaleValue(controlValue, [0, 1], [-1, 1]));
 };
 
 function aftertouchControl(controlValue) {
-  output.sendChannelAftertouch(clamp(controlValue, 0, 1), "all");
+  if(output)output.sendChannelAftertouch(clamp(controlValue, 0, 1), "all");
 };
 
 function cc1Control(controlValue) {
-  output.sendControlChange(Number(cc1Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc1Channel.value]);
+  if(output)output.sendControlChange(Number(cc1Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc1Channel.value]);
 };
 
 function cc2Control(controlValue) {
-  output.sendControlChange(Number(cc2Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc2Channel.value]);
+  if(output)output.sendControlChange(Number(cc2Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc2Channel.value]);
 };
 
 function cc3Control(controlValue) {
-  output.sendControlChange(Number(cc3Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc3Channel.value]);
+  if(output)output.sendControlChange(Number(cc3Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc3Channel.value]);
 };
 
 function cc4Control(controlValue) {
-  output.sendControlChange(Number(cc4Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc4Channel.value]);
+  if(output) output.sendControlChange(Number(cc4Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc4Channel.value]);
 };
 
 //Trigger note if index fingers touching
@@ -284,8 +287,8 @@ function Trigger3(rightThumbX, rightPinkyX) {
 //Output movement to midi
 function myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWrist, rightThumb, rightPinky) {
   if (midiVelInput.value === "nil"){midiVel = 1};
-  if (pitchBendInput.value === "nil"){output.sendPitchBend(0)};
-  if (aftertouchInput.value === "nil"){output.sendChannelAftertouch(0, "all")};
+  if (pitchBendInput.value === "nil" && output && output.sendPitchBend){output.sendPitchBend(0)};
+  if (aftertouchInput.value === "nil" && output && output.sendChannelAftertouch){output.sendChannelAftertouch(0, "all")};
   if (cc1Input.value === "nil"){cc1Control(0)};
   if (cc2Input.value === "nil"){cc2Control(0)};
   if (cc3Input.value === "nil"){cc3Control(0)};
