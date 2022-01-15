@@ -75,14 +75,6 @@ let midi2Note = "C5";
 let midi3Note = "C5";
 
 
-/*
-//Create gesture recognition
-const knownGestures = [
-  fp.Gestures.VictoryGesture,
-  fp.Gestures.ThumbsUpGesture
-];
-const GE = new fp.GestureEstimator(knownGestures);*/
-
 Tone.Transport.bpm.value = 120;
 
 WebMidi
@@ -429,24 +421,17 @@ function onResults(results) {
         }
       })};
 
-      //let flandmark = landmarks.map(landmark => [landmark.x, landmark.y, landmark.z]);
-      //est = GE.estimate(flandmark, 9);
-    
+ 
       if (isRightHand === false){
         leftIndex = landmarks[8];
         leftWrist = landmarks[0];
         leftThumb = landmarks[4];
         leftPinky = landmarks[20];
-        /*if(gesture.checked) {
-          Trigger2(est);
-          //console.log("Left Hand:", est.gestures[0].name);
-        };*/
       } else {
         rightIndex = landmarks[8];
         rightWrist = landmarks[0];
         rightThumb = landmarks[4];
         rightPinky = landmarks[20];
-        //if(gesture.checked && est.gestures.length)console.log("Right Hand:", est.gestures[0].name);
       }
     }
   canvasCtx.restore();
