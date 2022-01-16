@@ -56,7 +56,7 @@ const cc4Input = document.getElementById("cc4Input");
 const cc4Controller = document.getElementById("cc4Controller");
 const cc4Channel = document.getElementById("cc4Channel");
 let leftWrist, leftIndex, leftPinky, rightPinky, rightWrist, rightIndex, leftThumb, rightThumb, leftThumbX, rightThumbX, leftIndexX, leftPinkyX, leftIndexY, leftWristX, leftWristY, rightIndexX, rightIndexY, rightPinkyX, rightWristX, rightWristY, leftClose, rightClose, distance;
-let output, midiControlValue=60, midiVel=1;
+let output, midiControlValue=0.5, midiVel=1;
 
 //create dictionary of midi Notes and set default values
 const midiDic = {0: "C0", 1: "C#0", 2: "D0", 3: "D#0", 4: "E0", 5: "F0", 6: "F#0", 7: "G0", 8: "G#0", 9: "A0", 10: "A#0", 11: "B0", 
