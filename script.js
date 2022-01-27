@@ -294,9 +294,9 @@ function myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWri
     if(io.in.value === "rightClosed" && rightIndex){io.out((scaleValue((Math.sqrt(((rightIndex.x - rightWrist.x)**2)+((rightIndex.y - rightWrist.y)**2))), [0.1, 0.4], [1, 0])))};
     if(io.in.value === "indexDistance" && leftIndex && rightIndex){io.out((Math.sqrt(((leftIndex.x - rightIndex.x)**2)+((leftIndex.y - rightIndex.y)**2))))}
   });  
-  if (gesture.checked && leftThumb && leftPinky){Trigger2(leftThumb.x, leftPinky.x)};
-  if (gesture.checked && rightThumb && rightPinky){Trigger3(rightThumb.x, rightPinky.x)};
-  if (gesture.checked && leftIndex && rightIndex){Trigger1((Math.sqrt(((leftIndex.x - rightIndex.x)**2)+((leftIndex.y - rightIndex.y)**2))))};
+  if (gesture.checked && output && leftThumb && leftPinky){Trigger2(leftThumb.x, leftPinky.x)};
+  if (gesture.checked && output && rightThumb && rightPinky){Trigger3(rightThumb.x, rightPinky.x)};
+  if (gesture.checked && output && leftIndex && rightIndex){Trigger1((Math.sqrt(((leftIndex.x - rightIndex.x)**2)+((leftIndex.y - rightIndex.y)**2))))};
 };
 
 //Calculate FPS
