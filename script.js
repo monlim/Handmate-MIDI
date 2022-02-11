@@ -240,7 +240,7 @@ function Trigger2(leftThumbX, leftPinkyX) {
     output.playNote(midi2Note, [trigger2Channel.value]);
     setTimeout(function(){output.stopNote(midi2Note, [trigger2Channel.value])}, 500);
   }
-  if((leftThumbX - leftPinkyX) > fingerDistanceDeactivate){
+  if((leftThumbX - leftPinkyX) > t2DistanceDeactivate){
     t2on = false;
   }
 };
@@ -248,7 +248,7 @@ function Trigger2(leftThumbX, leftPinkyX) {
 //Trigger note if right hand reversed
 let t3on = false;
 let t3DistanceActivate = -0.1;
-let t3DistanceDeactivate = 0.1;
+let t3DistanceDeactivate = 0;
 function Trigger3(rightThumbX, rightPinkyX) {
   if ((rightPinkyX - rightThumbX) <= t3DistanceActivate){
     if(t3on)return;
@@ -256,7 +256,7 @@ function Trigger3(rightThumbX, rightPinkyX) {
     output.playNote(midi3Note, [trigger3Channel.value]);
     setTimeout(function(){output.stopNote(midi3Note, [trigger3Channel.value])}, 500);
   }
-  if((rightPinkyX - rightThumbX) > fingerDistanceDeactivate){
+  if((rightPinkyX - rightThumbX) > t3DistanceDeactivate){
     t3on = false;
   }
 };
