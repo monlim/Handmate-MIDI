@@ -9,7 +9,7 @@ function toggleControl(){
     controlPanel.style.display = "none";
     controlButton.innerHTML = "Show controls";
   }     
-};
+}
 
 //Reset audio context
 document.documentElement.addEventListener('mousedown', () => {
@@ -89,7 +89,7 @@ function onEnabled(){
         }).appendTo('#dropdown select');
     }
     output = WebMidi.outputs[0]; 
-};
+}
 
 function gotDevices(deviceInfos) {
   // Handles being called several times to update labels. Preserve values.
@@ -113,7 +113,7 @@ function gotDevices(deviceInfos) {
       select.value = values[selectorIndex];
     }
   });
-};
+}
 
 navigator.mediaDevices.enumerateDevices().then(gotDevices).catch(handleError);
 
@@ -122,11 +122,11 @@ function gotStream(stream) {
   videoElement.srcObject = stream;
   // Refresh button list in case labels have become available
   return navigator.mediaDevices.enumerateDevices();
-};
+}
 
 function handleError(error) {
   console.log('navigator.MediaDevices.getUserMedia error: ', error.message, error.name);
-};
+}
 
 //send Midi notes out when "send Midi" box checked
 sendMidi.addEventListener("change", function(){
@@ -159,14 +159,14 @@ function changeDevice(){
       output = WebMidi.outputs[i];
     }
   };
-};
+}
 
 //general scaling function
 function scaleValue(value, from, to) {
   let scale = (to[1] - to[0]) / (from[1] - from[0]);
   let capped = Math.min(from[1], Math.max(from[0], value)) - from[0];
   return (capped * scale + to[0]);
-};
+}
 
 //create midi note loop
 const loop = new Tone.Loop((time) => {
@@ -187,19 +187,19 @@ bpm.addEventListener("input", function(ev){
 
 function midiVelControl(controlValue) {
   midiVel = clamp(controlValue, 0, 1);
-};
+}
 
 function pitchBendControl(controlValue) {
   if(output)output.sendPitchBend(scaleValue(controlValue, [0, 1], [-1, 1]));
-};
+}
 
 function aftertouchControl(controlValue) {
   if(output)output.sendChannelAftertouch(clamp(controlValue, 0, 1), "all");
-};
+}
 
 function cc1Control(controlValue) {
   if(output)output.sendControlChange(Number(cc1Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc1Channel.value]);
-};
+}
 
 function cc2Control(controlValue) {
   if(output)output.sendControlChange(Number(cc2Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc2Channel.value]);
@@ -207,11 +207,11 @@ function cc2Control(controlValue) {
 
 function cc3Control(controlValue) {
   if(output)output.sendControlChange(Number(cc3Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc3Channel.value]);
-};
+}
 
 function cc4Control(controlValue) {
   if(output) output.sendControlChange(Number(cc4Controller.value), scaleValue(controlValue, [0, 1], [0, 127]), [cc4Channel.value]);
-};
+}
 
 //Trigger note if index fingers touching
 let t1on = false;
@@ -227,7 +227,7 @@ function Trigger1(distance) {
   if(distance > fingerDistanceDeactivate){
     t1on = false;
   }
-};
+}
 
 //Trigger note if left hand reversed
 let t2on = false;
@@ -243,7 +243,7 @@ function Trigger2(leftThumbX, leftPinkyX) {
   if((leftThumbX - leftPinkyX) > t2DistanceDeactivate){
     t2on = false;
   }
-};
+}
 
 //Trigger note if right hand reversed
 let t3on = false;
@@ -259,7 +259,7 @@ function Trigger3(rightThumbX, rightPinkyX) {
   if((rightPinkyX - rightThumbX) > t3DistanceDeactivate){
     t3on = false;
   }
-};
+}
 
 //Output movement to midi
 let controls_io = [
@@ -297,7 +297,7 @@ function myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWri
   if (gesture.checked && output && leftThumb && leftPinky){Trigger2(leftThumb.x, leftPinky.x)};
   if (gesture.checked && output && rightThumb && rightPinky){Trigger3(rightThumb.x, rightPinky.x)};
   if (gesture.checked && output && leftIndex && rightIndex){Trigger1((Math.sqrt(((leftIndex.x - rightIndex.x)**2)+((leftIndex.y - rightIndex.y)**2))))};
-};
+}
 
 //Calculate FPS
 let counter = 0;
@@ -351,7 +351,7 @@ function onResults(results) {
   canvasCtx.restore();
   myMidi(leftIndex, leftWrist, leftThumb, leftPinky, rightIndex, rightWrist, rightThumb, rightPinky);
   };
-};
+}
 
 //Toggle selfie view
 selfie.addEventListener('change', function() {
@@ -391,6 +391,6 @@ function start() {
     video: {deviceId: videoSource ? {exact: videoSource} : undefined} 
   };
   navigator.mediaDevices.getUserMedia(constraints).then(gotStream).then(gotDevices).catch(handleError);
-};
+}
 
 videoSelect.onchange = start;
