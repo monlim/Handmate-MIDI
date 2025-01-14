@@ -9,7 +9,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.3/hands.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/webmidi@next/dist/iife/webmidi.iife.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.31/Tone.js"></script>
 </head>
 
 <body>
@@ -40,41 +39,20 @@
     </div>
     <hr>
 
-
-    <!--Automate bpm<div class="tooltip circle"><sup><i>i</i></sup>
-      <span class="tooltiptext">Control bpm with movement, range between 20 - 500</span>
-      </div>
-      <input id="autoBpm" type="checkbox">
-      <label class="label"
-      for="bpmControlInput"></label>
-        <select name="bpmControlInput" id="bpmControlInput">
-          <option value="leftIndexX">Left index x</option>
-          <option value="leftIndexY">Left index y</option>
-          <option value="leftClosed">Left hand closed</option>
-          <option value="rightIndexX" selected>Right index x</option>
-          <option value="rightIndexY">Right index y</option>
-          <option value="rightClosed">Right hand closed</option>
-          <option value="indexDistance">Index distance</option>
-        </select><br>-->
-
-
     <b>Send midi notes<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">Check box to send continous stream of midi notes</span>
       </div></b><input id="sendMidi" type="checkbox"><br>
-    BPM<input type="range" id="bpm" name="bpm" min="20" max="500" step="1" value="120">
-      <label for="bpm"></label>
-      <span id="bpmValue" class="rangeValue">120</span><br>
-    <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+    <label for="midiChannel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">1-16 channels</span>
       </div>
     </label>
     <input type="number" id="midiChannel" min="1" max="16" value="1"/><br>
     Note pitch<div class="tooltip circle"><sup><i>i</i></sup>
-      <span class="tooltiptext">Control note pitch with movement. If none selected, note will not be generated</span>
+      <span class="tooltiptext">Control note pitch with movement. If none selected, note will be C4</span>
       </div>
       <label class="label"
-      for="midiControlInput"></label>
-        <select name="midiControlInput" id="midiControlInput">
+      for="midiPitchControlInput"></label>
+        <select name="midiPitchControlInput" id="midiPitchControlInput">
           <option value="nil" selected>----</option>
           <option value="leftIndexX">Left index x</option>
           <option value="leftIndexY">Left index y</option>
@@ -99,8 +77,43 @@
           <option value="rightClosed">Right hand closed</option>
           <option value="indexDistance">Index distance</option>
         </select><br>
-      <hr>
-
+      BPM automate<div class="tooltip circle"><sup><i>i</i></sup>
+      <span class="tooltiptext">Control BPM with movement. If none selected, note velocity is set by slider</span>
+      </div>
+      <label class="label"
+      for="BPMAutomateInput"></label>
+        <select name="BPMAutomateInput" id="BPMAutomateInput">
+          <option value="nil" selected>----</option>
+          <option value="leftIndexX">Left index x</option>
+          <option value="leftIndexY">Left index y</option>
+          <option value="leftClosed">Left hand closed</option>
+          <option value="rightIndexX">Right index x</option>
+          <option value="rightIndexY">Right index y</option>
+          <option value="rightClosed">Right hand closed</option>
+          <option value="indexDistance">Index distance</option>
+        </select><br>
+     <!--
+      BPM<input type="range" id="bpm" name="bpm" min="20" max="500" step="1" value="120">
+      <label for="bpm"></label>
+      <span id="bpmValue" class="rangeValue">120</span><br>
+      <hr>-->
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <!-- Minimum Value Input -->
+        <input type="number" id="sliderMinValue" value="20" step="1" style="width: 60px;">
+      
+        <!-- BPM Slider -->
+        <input type="range" id="bpm" name="bpm" min="20" max="500" step="1" value="120" style="flex-grow: 1;">
+        
+        <!-- Maximum Value Input -->
+        <input type="number" id="sliderMaxValue" value="500" step="1" style="width: 60px;">
+      </div>
+      
+      <!-- BPM Value Display -->
+      <div style="text-align: center; margin-top: 0px;">
+        BPM: <span id="bpmValue" class="rangeValue">120</span>
+      </div>
+      
+      <hr>  
 
       <b>Continous controls<div class="tooltip circle"><sup><i>i</i></sup>
       <span class="tooltiptext">Send midi CC</span>
@@ -225,7 +238,7 @@
       <b>Gesture Recognition<div class="tooltip circle"><sup><i>i</i></sup>
         <span class="tooltiptext">Check box to start gesture recognition to trigger Midi notes</span>
         </div></b><input id="gesture" type="checkbox"><br>
-      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+      <label for="trigger1Channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
         <span class="tooltiptext">1-16 channels</span>
         </div>
       </label>
@@ -238,7 +251,7 @@
       <span style='font-size: 25px;'>&#128073&#128072;</span><div class="tooltip circle"><sup><i>i</i></sup>
         <span class="tooltiptext">index fingers touching</span>
         </div><br>
-      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+      <label for="trigger2Channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
         <span class="tooltiptext">1-16 channels</span>
         </div>
       </label>
@@ -251,7 +264,7 @@
       <span class="flipH">&#9995;</span><div class="tooltip circle"><sup><i>i</i></sup>
         <span class="tooltiptext">back of left hand facing screen</span>
         </div><br>
-      <label for="channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
+      <label for="trigger3Channel">Channel:<div class="tooltip circle"><sup><i>i</i></sup>
         <span class="tooltiptext">1-16 channels</span>
         </div>
       </label>
