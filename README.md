@@ -1,4 +1,4 @@
-Handmate-MIDI - we recommend using Google Chrome or Microsoft Edge as web MIDI is not supported by many other browsers. This version has been developed for desktop only. Windows users need to use loopMidi or VBAN-2-Midi as a bridge (driver) for the MIDI out device. Please make sure you have enabled MIDI in your browser security settings.
+Handmate-MIDI - we recommend using Google Chrome, Firefox or Microsoft Edge as web MIDI is not supported by some other browsers including Safari. This version has been developed for desktop only. Windows users need to use loopMidi or VBAN-2-Midi as a bridge (driver) for the MIDI out device. Please make sure you have enabled MIDI in your browser security settings.
 
 The MidiTest MaxMSP patch is included here as an example of how to get the MIDI information from the web browser.
 
